@@ -45,6 +45,7 @@ object Extraction {
     records
       .groupBy(_._2)
       .mapValues(r => r.map(_._3).sum / r.size)
+      .toSeq
   }
 
 }
