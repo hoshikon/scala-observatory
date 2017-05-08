@@ -1,6 +1,9 @@
 package observatory
 
+import java.io.InputStream
 import java.time.LocalDate
+
+import scala.io.Source
 
 /**
   * 1st milestone: data extraction
@@ -14,7 +17,24 @@ object Extraction {
     * @return A sequence containing triplets (date, location, temperature)
     */
   def locateTemperatures(year: Int, stationsFile: String, temperaturesFile: String): Iterable[(LocalDate, Location, Double)] = {
-    ???
+    val stationsInput: InputStream = getClass.getResourceAsStream(stationsFile)
+    val tempInput: InputStream = getClass.getResourceAsStream(temperaturesFile)
+    def readInput(inputStream: InputStream) = Source.fromInputStream(inputStream).getLines().map(_.split(",", -1).map(_.trim))
+    def toCelsius(f: Double) = (f - 32.0) / 1.8
+    val missing = toCelsius(9999.9)
+
+    val stationToLocation = readInput(stationsInput)
+      .filter(row => !row(2).isEmpty && !row(3).isEmpty)
+      .map(row => (row(0), row(1)) -> Location(row(2).toDouble, row(3).toDouble))
+      .toMap
+
+    readInput(tempInput)
+      .map(row => (
+        LocalDate.of(year, row(2).toInt, row(3).toInt),
+        stationToLocation.getOrElse((row(0), row(1)), null),
+        toCelsius(row(4).toDouble)))
+      .filter(tuple => tuple._2 != null && tuple._3 != missing)
+      .toSeq
   }
 
   /**
