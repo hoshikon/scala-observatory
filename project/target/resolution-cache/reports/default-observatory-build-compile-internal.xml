@@ -9,7 +9,7 @@
 		extra-sbtVersion="0.13"
 		conf="compile-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20170508101939"/>
+		date="20170508145940"/>
 	<dependencies>
 		<module organisation="io.get-coursier" name="sbt-coursier">
 			<revision name="1.0.0-M15" status="release" pubdate="20161127172819" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/alexarchambault/coursier" extra-scalaVersion="2.10" extra-sbtVersion="0.13" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="24">

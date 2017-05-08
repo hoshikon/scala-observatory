@@ -51,13 +51,18 @@ object Visualization {
     */
   def interpolateColor(points: Iterable[(Double, Color)], value: Double): Color = {
     val sortedPoints = points.toSeq.sortBy(_._1)
-    val index = sortedPoints.indexWhere(_._1 >= value)
-    val (colour1, colour2) = (sortedPoints(index - 1)._2, sortedPoints(index)._2)
-    val red = (colour1.red + colour2.red) / 2
-    val green = (colour1.green + colour2.green) / 2
-    val blue = (colour1.blue + colour2.blue) / 2
+    if (value <= sortedPoints.head._1) sortedPoints.head._2
+    else if (value >= sortedPoints.last._1) sortedPoints.last._2
+    else {
+      val index = sortedPoints.indexWhere(_._1 > value)
+      val (c1, c2) = (sortedPoints(index - 1)._2, sortedPoints(index)._2)
+      val (v1, v2) = (sortedPoints(index - 1)._1, sortedPoints(index)._1)
+      val red = round(c1.red + (c2.red - c1.red) * (value - v1) / (v2 - v1)).toInt
+      val green = round(c1.green + (c2.green - c1.green) * (value - v1) / (v2 - v1)).toInt
+      val blue = round(c1.blue + (c2.blue - c1.blue) * (value - v1) / (v2 - v1)).toInt
 
-    Color(red, green, blue)
+      Color(red, green, blue)
+    }
   }
 
   /**
@@ -66,8 +71,27 @@ object Visualization {
     * @return A 360×180 image where each pixel shows the predicted temperature at its location
     */
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
-    ???
+    val array = new Array[Double](360 * 180)
+
+    for {
+      y <- (-89 to 90).reverse
+      x <- -180 to 179
+    } array((90 - y) * (180 + x)) = predictTemperature(temperatures, Location(y, x))
+
+//    for {
+//      (rowNum, tempRow) <- temperatures.groupBy(t => (90.0 - t._1.lat).toInt).toSeq.sortBy(_._1)
+//      (colNum, tempCol) <- tempRow.groupBy(t => (180 + t._1.lon).toInt).toSeq.sortBy(_._1)
+//    } {
+//      array(rowNum*colNum) = tempCol.map(_._2).sum / tempCol.size
+//    }
+
+    val pixels = array
+      .map(temp => {
+        val c = interpolateColor(colors, temp)
+        Pixel(c.red, c.green, c.blue, 1)
+      })
+
+    Image(360, 180, pixels)
   }
 
 }
-
