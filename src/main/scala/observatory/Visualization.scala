@@ -25,7 +25,7 @@ object Visualization {
       val lon1 = radians(l1.lon)
       val lon2 = radians(l2.lon)
       val deltaLon = abs(lon1 - lon2)
-      val centralAngle = acos(sin(lat1) * sin(lat2) + cos(lon1) * cos(lon2) * cos(deltaLon))
+      val centralAngle = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaLon))
       RADUIS_EARTH * centralAngle
     }
 
@@ -76,14 +76,7 @@ object Visualization {
     for {
       y <- (-89 to 90).reverse
       x <- -180 to 179
-    } array((90 - y) * (180 + x)) = predictTemperature(temperatures, Location(y, x))
-
-//    for {
-//      (rowNum, tempRow) <- temperatures.groupBy(t => (90.0 - t._1.lat).toInt).toSeq.sortBy(_._1)
-//      (colNum, tempCol) <- tempRow.groupBy(t => (180 + t._1.lon).toInt).toSeq.sortBy(_._1)
-//    } {
-//      array(rowNum*colNum) = tempCol.map(_._2).sum / tempCol.size
-//    }
+    } array((90 - y) * 360 + (180 + x)) = predictTemperature(temperatures, Location(y, x))
 
     val pixels = array
       .map(temp => {
