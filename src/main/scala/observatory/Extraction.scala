@@ -35,6 +35,22 @@ object Extraction {
         toCelsius(row(4).toDouble)))
       .filter(tuple => tuple._2 != null && tuple._3 != missing)
       .toSeq
+
+//    def toCelsiusOp(f: Double) = if (f == 9999.9) None else Some((f - 32.0) / 1.8)
+//
+//    readInput(tempInput)
+//      .map(row => (
+//        LocalDate.of(year, row(2).toInt, row(3).toInt),
+//        stationToLocation.get(row(0), row(1)),
+//        toCelsiusOp(row(4).toDouble)))
+//      .collect({ case (date, Some(location), Some(degree)) => (date, location, degree)})
+//      .toSeq
+
+//    def isAValid(row: Array[String]) = stationToLocation.get(row(0), row(1)).isDefined && toCelsiusOp(row(4).toDouble).isDefined
+//    def rowToTuple(row: Array[String]) = (LocalDate.of(year, row(2).toInt, row(3).toInt), stationToLocation(row(0), row(1)), toCelsiusOp(row(4).toDouble).get)
+//    readInput(tempInput)
+//      .collect({case row if isAValid(row) => rowToTuple(row)})
+//      .toSeq
   }
 
   /**
