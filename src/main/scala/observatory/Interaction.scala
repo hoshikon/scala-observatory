@@ -1,5 +1,7 @@
 package observatory
 
+import java.lang.Math._
+
 import com.sksamuel.scrimage.{Image, Pixel}
 
 /**
@@ -14,7 +16,10 @@ object Interaction {
     * @return The latitude and longitude of the top-left corner of the tile, as per http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
     */
   def tileLocation(zoom: Int, x: Int, y: Int): Location = {
-    ???
+    val numOfPartitions = pow(2, zoom)
+    val lon = (360.0 * (x / numOfPartitions)) - 180.0
+    val lat = atan(sinh(PI - (y / numOfPartitions) * 2 * PI)) * 180.0 / PI
+    Location(lat, lon)
   }
 
   /**
