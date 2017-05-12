@@ -81,7 +81,7 @@ object Visualization {
     val pixels = array
       .map(temp => {
         val c = interpolateColor(colors, temp)
-        Pixel(c.red, c.green, c.blue, 1)
+        Pixel(c.red, c.green, c.blue, 127)
       })
 
     Image(360, 180, pixels)
