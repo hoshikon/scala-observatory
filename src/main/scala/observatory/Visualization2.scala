@@ -44,13 +44,6 @@ object Visualization2 {
     x: Int,
     y: Int
   ): Image = {
-//    val gridLocToTemps = (
-//      for {
-//      lat <- tileLocation(zoom, x, y + 1).lat.floor.toInt to tileLocation(zoom, x, y).lat.ceil.toInt
-//      lon <- tileLocation(zoom, x, y).lon.floor.toInt to tileLocation(zoom, x + 1, y).lon.ceil.toInt
-//      } yield (Location(lat, lon), grid(lon, lat))
-//    ).toMap
-
     val pixels = for {
       row <- (y * 256) until ((y + 1) * 256)
       col <- (x * 256) until ((x + 1) * 256)
@@ -62,12 +55,7 @@ object Visualization2 {
         grid(loc.lat.ceil.toInt, loc.lon.floor.toInt),
         grid(loc.lat.floor.toInt, loc.lon.floor.toInt),
         grid(loc.lat.ceil.toInt, loc.lon.ceil.toInt),
-        grid(loc.lat.floor.toInt, loc.lon.ceil.toInt)
-//        gridLocToTemps(Location(loc.lon.floor.toInt, loc.lat.ceil.toInt)),
-//        gridLocToTemps(Location(loc.lon.floor.toInt, loc.lat.floor.toInt)),
-//        gridLocToTemps(Location(loc.lon.ceil.toInt, loc.lat.ceil.toInt)),
-//        gridLocToTemps(Location(loc.lon.ceil.toInt, loc.lat.floor.toInt))
-      )
+        grid(loc.lat.floor.toInt, loc.lon.ceil.toInt))
       val c = Visualization.interpolateColor(colors, temp)
       Pixel(c.red, c.green, c.blue, 127)
     }
