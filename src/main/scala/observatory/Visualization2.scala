@@ -1,6 +1,7 @@
 package observatory
 
 import com.sksamuel.scrimage.{Image, Pixel}
+import observatory.Interaction.tileLocation
 
 /**
   * 5th milestone: value-added information visualization
@@ -25,7 +26,7 @@ object Visualization2 {
     d10: Double,
     d11: Double
   ): Double = {
-    ???
+    (1 - y) * ((1 - x) * d00 + x * d10) + y * ((1 - x) * d01 + x * d11)
   }
 
   /**
@@ -43,7 +44,35 @@ object Visualization2 {
     x: Int,
     y: Int
   ): Image = {
-    ???
+//    val gridLocToTemps = (
+//      for {
+//      lat <- tileLocation(zoom, x, y + 1).lat.floor.toInt to tileLocation(zoom, x, y).lat.ceil.toInt
+//      lon <- tileLocation(zoom, x, y).lon.floor.toInt to tileLocation(zoom, x + 1, y).lon.ceil.toInt
+//      } yield (Location(lat, lon), grid(lon, lat))
+//    ).toMap
+
+    val pixels = for {
+      row <- (y * 256) until ((y + 1) * 256)
+      col <- (x * 256) until ((x + 1) * 256)
+    } yield {
+      val loc = tileLocation(zoom + 8, col, row)
+      val temp = bilinearInterpolation(
+        loc.lon % 1,
+        1 - (loc.lat % 1),
+        grid(loc.lat.ceil.toInt, loc.lon.floor.toInt),
+        grid(loc.lat.floor.toInt, loc.lon.floor.toInt),
+        grid(loc.lat.ceil.toInt, loc.lon.ceil.toInt),
+        grid(loc.lat.floor.toInt, loc.lon.ceil.toInt)
+//        gridLocToTemps(Location(loc.lon.floor.toInt, loc.lat.ceil.toInt)),
+//        gridLocToTemps(Location(loc.lon.floor.toInt, loc.lat.floor.toInt)),
+//        gridLocToTemps(Location(loc.lon.ceil.toInt, loc.lat.ceil.toInt)),
+//        gridLocToTemps(Location(loc.lon.ceil.toInt, loc.lat.floor.toInt))
+      )
+      val c = Visualization.interpolateColor(colors, temp)
+      Pixel(c.red, c.green, c.blue, 127)
+    }
+
+    Image(256, 256, pixels.toArray)
   }
 
 }
