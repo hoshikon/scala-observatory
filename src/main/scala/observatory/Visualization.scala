@@ -55,8 +55,8 @@ object Visualization {
     else if (value >= sortedPoints.last._1) sortedPoints.last._2
     else {
       val index = sortedPoints.indexWhere(_._1 > value)
-      val (c1, c2) = (sortedPoints(index - 1)._2, sortedPoints(index)._2)
-      val (v1, v2) = (sortedPoints(index - 1)._1, sortedPoints(index)._1)
+      val (v1, c1) = sortedPoints(index - 1)
+      val (v2, c2) = sortedPoints(index)
       val red = round(c1.red + (c2.red - c1.red) * (value - v1) / (v2 - v1)).toInt
       val green = round(c1.green + (c2.green - c1.green) * (value - v1) / (v2 - v1)).toInt
       val blue = round(c1.blue + (c2.blue - c1.blue) * (value - v1) / (v2 - v1)).toInt
