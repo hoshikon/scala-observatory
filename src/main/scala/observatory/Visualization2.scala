@@ -49,13 +49,17 @@ object Visualization2 {
       col <- (x * 256) until ((x + 1) * 256)
     } yield {
       val loc = tileLocation(zoom + 8, col, row)
+      val (x0, y0) = (loc.lon.floor.toInt, loc.lat.ceil.toInt)
+      val (x1, y1) = (x0 + 1, y0 - 1)
+
       val temp = bilinearInterpolation(
-        loc.lon % 1,
-        1 - (loc.lat % 1),
-        grid(loc.lat.ceil.toInt, loc.lon.floor.toInt),
-        grid(loc.lat.floor.toInt, loc.lon.floor.toInt),
-        grid(loc.lat.ceil.toInt, loc.lon.ceil.toInt),
-        grid(loc.lat.floor.toInt, loc.lon.ceil.toInt))
+        loc.lon - loc.lon.floor,
+        loc.lat.ceil - loc.lat,
+        grid(y0, x0),
+        grid(y1, x0),
+        grid(y0, x1),
+        grid(y1, x1))
+
       val c = Visualization.interpolateColor(colors, temp)
       Pixel(c.red, c.green, c.blue, 127)
     }
