@@ -71,20 +71,29 @@ object Visualization {
     * @return A 360×180 image where each pixel shows the predicted temperature at its location
     */
   def visualize(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)]): Image = {
-    val array = new Array[Double](360 * 180)
+//    val array = new Array[Double](360 * 180)
+//
+//    for {
+//      y <- (-89 to 90).reverse
+//      x <- -180 to 179
+//    } array((90 - y) * 360 + (180 + x)) = predictTemperature(temperatures, Location(y, x))
+//
+//    val pixels = array
+//      .map(temp => {
+//        val c = interpolateColor(colors, temp)
+//        Pixel(c.red, c.green, c.blue, 127)
+//      })
 
-    for {
+    val pixels = for {
       y <- (-89 to 90).reverse
       x <- -180 to 179
-    } array((90 - y) * 360 + (180 + x)) = predictTemperature(temperatures, Location(y, x))
+    } yield {
+      val t = predictTemperature(temperatures, Location(y, x))
+      val c = interpolateColor(colors, t)
+      Pixel(c.red, c.green, c.blue, 127)
+    }
 
-    val pixels = array
-      .map(temp => {
-        val c = interpolateColor(colors, temp)
-        Pixel(c.red, c.green, c.blue, 127)
-      })
-
-    Image(360, 180, pixels)
+    Image(360, 180, pixels.toArray)
   }
 
 }
