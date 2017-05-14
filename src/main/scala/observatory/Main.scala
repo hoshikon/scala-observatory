@@ -41,7 +41,7 @@ object Main extends App {
   })
   println("Loading Finished\n")
   println("[Creating Images (Temperatures)]")
-  generateTiles(
+  generateTiles[Iterable[(Location, Double)]](
     yearlyData,
     (year, zoom, x, y, data) => {
       val image = tile(data, colorTemp, zoom, x, y)
@@ -51,7 +51,7 @@ object Main extends App {
   println("Images Created for Temperatures\n")
 
   println("[Creating Images (Deviations)]")
-  generateTiles(
+  generateTiles[Iterable[(Location, Double)]](
     yearlyData.dropWhile(_._1 < 1991),
     (year, zoom, x, y, data) => {
       val image = visualizeGrid(
