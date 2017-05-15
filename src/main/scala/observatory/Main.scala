@@ -35,12 +35,12 @@ object Main extends App {
   println("===== START =====")
 
   println("[Loading Data]")
-  val yearlyData = (1975 to 2015).par.map(year => {
+  val yearlyData = (1975 to 2015).map(year => {
     val dataOfYear = locateTemperatures(year, "/stations.csv", s"/$year.csv")
     val yearlyAvg: Iterable[(Location, Double)] = locationYearlyAverageRecords(dataOfYear)
     print(s"$year ")
     (year, yearlyAvg)
-  }).seq
+  })
   println("\nLoading Finished\n")
   println("[Creating Images (Temperatures)]")
   generateTiles[Iterable[(Location, Double)]](
