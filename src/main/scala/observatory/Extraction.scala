@@ -23,7 +23,7 @@ object Extraction {
     def toCelsius(f: Double) = if (f == 9999.9) None else Some((f - 32.0) / 1.8)
 
     val stationToLocation = readInput(stationsInput)
-      .filter(row => !row(2).isEmpty && !row(3).isEmpty)
+      .withFilter(row => !row(2).isEmpty && !row(3).isEmpty)
       .map(row => (row(0), row(1)) -> Location(row(2).toDouble, row(3).toDouble))
       .toMap
 
