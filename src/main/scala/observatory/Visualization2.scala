@@ -45,7 +45,7 @@ object Visualization2 {
     y: Int
   ): Image = {
     val pixels = for {
-      row <- (y * 256) until ((y + 1) * 256)
+      row <- ((y * 256) until ((y + 1) * 256)).par
       col <- (x * 256) until ((x + 1) * 256)
     } yield {
       val loc = tileLocation(zoom + 8, col, row)

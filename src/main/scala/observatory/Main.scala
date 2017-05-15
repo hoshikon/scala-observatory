@@ -7,6 +7,8 @@ import observatory.Interaction.{generateTiles, tile}
 import observatory.Manipulation.{average, deviation}
 import observatory.Visualization2.visualizeGrid
 
+import scala.collection.immutable.Seq
+
 object Main extends App {
   val colorTemp =
     Seq(
@@ -33,19 +35,22 @@ object Main extends App {
   println("===== START =====")
 
   println("[Loading Data]")
-  val yearlyData = (1975 to 2015).map( year => {
+  val yearlyData = (1975 to 2015).par.map(year => {
     val dataOfYear = locateTemperatures(year, "/stations.csv", s"/$year.csv")
     val yearlyAvg: Iterable[(Location, Double)] = locationYearlyAverageRecords(dataOfYear)
     print(s"$year ")
     (year, yearlyAvg)
-  })
-  println("Loading Finished\n")
+  }).seq
+  println("\nLoading Finished\n")
   println("[Creating Images (Temperatures)]")
   generateTiles[Iterable[(Location, Double)]](
     yearlyData,
     (year, zoom, x, y, data) => {
-      val image = tile(data, colorTemp, zoom, x, y)
-      image.output(new File(s"target/temperatures/$year/$zoom/$x-$y.png"))
+      val fileName = s"target/temperatures/$year/$zoom/$x-$y.png"
+      if (!new File(fileName).exists()) {
+        val image = tile(data, colorTemp, zoom, x, y)
+        image.output(new File(fileName))
+      }
       print(s"$year ")
     })
   println("Images Created for Temperatures\n")
@@ -54,10 +59,13 @@ object Main extends App {
   generateTiles[Iterable[(Location, Double)]](
     yearlyData.dropWhile(_._1 < 1991),
     (year, zoom, x, y, data) => {
-      val image = visualizeGrid(
-        deviation(data, average(yearlyData.map(_._2))),
-        colorDev, zoom, x, y)
-      image.output(new File(s"target/deviations/$year/$zoom/$x-$y.png"))
+      val fileName = s"target/deviations/$year/$zoom/$x-$y.png"
+      if (!new File(fileName).exists()) {
+        val image = visualizeGrid(
+          deviation(data, average(yearlyData.map(_._2))),
+          colorDev, zoom, x, y)
+        image.output(new File(fileName))
+      }
       print(s"$year ")
     })
   println("Image Created for Deviations\n")
