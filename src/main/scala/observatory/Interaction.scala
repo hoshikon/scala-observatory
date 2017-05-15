@@ -32,12 +32,24 @@ object Interaction {
     * @return A 256×256 image showing the contents of the tile defined by `x`, `y` and `zooms`
     */
   def tile(temperatures: Iterable[(Location, Double)], colors: Iterable[(Double, Color)], zoom: Int, x: Int, y: Int): Image = {
+    var progress = 0
     val pixels = for {
       row <- ((y * 256) until ((y + 1) * 256)).par
       col <- (x * 256) until ((x + 1) * 256)
     } yield {
       val location = tileLocation(zoom + 8, col, row)
       val c = interpolateColor(colors, predictTemperature(temperatures, location))
+
+      if (col == (x + 1) * 256 - 1) {
+        progress = progress + 1
+        val length = progress * 30 / 256 // 0 to 10
+        val arrow: String = (0 until length).map(n => "=").mkString + ">"
+        val space = (0 until (30 - length)).map(n =>" ").mkString
+        val bar = s"|${arrow + space}|"
+        if (progress == 256) println(bar + " Done!")
+        else print(bar + "\r")
+      }
+
       Pixel(c.red, c.green, c.blue, 127)
     }
     Image(256, 256, pixels.toArray)

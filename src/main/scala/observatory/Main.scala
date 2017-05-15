@@ -46,12 +46,12 @@ object Main extends App {
   generateTiles[Iterable[(Location, Double)]](
     yearlyData,
     (year, zoom, x, y, data) => {
+      println(s"$year $zoom $x $y")
       val fileName = s"target/temperatures/$year/$zoom/$x-$y.png"
       if (!new File(fileName).exists()) {
         val image = tile(data, colorTemp, zoom, x, y)
         image.output(new File(fileName))
       }
-      print(s"$year ")
     })
   println("Images Created for Temperatures\n")
 
@@ -59,14 +59,14 @@ object Main extends App {
   generateTiles[Iterable[(Location, Double)]](
     yearlyData.dropWhile(_._1 < 1991),
     (year, zoom, x, y, data) => {
+      println(s"$year $zoom $x $y")
       val fileName = s"target/deviations/$year/$zoom/$x-$y.png"
       if (!new File(fileName).exists()) {
         val image = visualizeGrid(
-          deviation(data, average(yearlyData.map(_._2))),
-          colorDev, zoom, x, y)
+            deviation(data, average(yearlyData.map(_._2))),
+            colorDev, zoom, x, y)
         image.output(new File(fileName))
       }
-      print(s"$year ")
     })
   println("Image Created for Deviations\n")
 
