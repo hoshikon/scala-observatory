@@ -54,7 +54,7 @@ object Main extends App {
           if (directory.mkdirs()) println(s"created directory: $fileName") else println(s"could NOT create directory: $fileName")
         }
         val image = tile(data, colorTemp, zoom, x, y)
-        image.output(new File(fileName))
+        image.output(new File(s"$fileName/$x-$y.png"))
       }
     })
   println("Images Created for Temperatures\n")
