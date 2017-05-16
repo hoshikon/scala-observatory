@@ -47,8 +47,12 @@ object Main extends App {
     yearlyData,
     (year, zoom, x, y, data) => {
       println(s"$year $zoom $x $y")
-      val fileName = s"target/temperatures/$year/$zoom/$x-$y.png"
-      if (!new File(fileName).exists()) {
+      val fileName = s"target/temperatures/$year/$zoom"
+      if (!new File(s"$fileName/$x-$y.png").exists()) {
+        val directory = new File(s"$fileName")
+        if (!directory.exists()) {
+          if (directory.mkdirs()) println(s"created directory: $fileName") else println(s"could NOT create directory: $fileName")
+        }
         val image = tile(data, colorTemp, zoom, x, y)
         image.output(new File(fileName))
       }
