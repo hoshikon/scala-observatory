@@ -42,9 +42,9 @@ object Interaction {
 
       if (col == (x + 1) * 256 - 1) {
         progress = progress + 1
-        val length = progress * 30 / 256 // 0 to 10
+        val length = progress * 100 / 256 // 0 to 10
         val arrow: String = (0 until length).map(n => "=").mkString + ">"
-        val space = (0 until (30 - length)).map(n =>" ").mkString
+        val space = (0 until (100 - length)).map(n =>" ").mkString
         val bar = s"|${arrow + space}|"
         if (progress == 256) println(bar + " Done!")
         else print(bar + "\r")

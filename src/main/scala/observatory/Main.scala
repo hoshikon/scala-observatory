@@ -61,13 +61,13 @@ object Main extends App {
 
   println("[Creating Images (Deviations)]")
   generateTiles[Iterable[(Location, Double)]](
-    yearlyData.dropWhile(_._1 < 1991),
+    yearlyData.dropWhile(_._1 < 1990),
     (year, zoom, x, y, data) => {
       println(s"$year $zoom $x $y")
       val fileName = s"target/deviations/$year/$zoom/$x-$y.png"
       if (!new File(fileName).exists()) {
         val image = visualizeGrid(
-            deviation(data, average(yearlyData.map(_._2))),
+            deviation(data, average(yearlyData.takeWhile(_._1 < 1990).map(_._2))),
             colorDev, zoom, x, y)
         image.output(new File(fileName))
       }
