@@ -1,11 +1,7 @@
 package observatory
 
-import java.io.File
-
 import observatory.Extraction.{locateTemperatures, locationYearlyAverageRecords}
-import observatory.Interaction.{generateTiles, tile}
-import observatory.Manipulation.{average, deviation}
-import observatory.Visualization2.visualizeGrid
+import observatory.ImageGenerator.{generateDevImages, generateTempImages}
 
 import scala.collection.immutable.Seq
 
@@ -33,7 +29,6 @@ object Main extends App {
     )
 
   println("===== START =====")
-
   println("[Loading Data]")
   val yearlyData = (1975 to 2015).map(year => {
     val dataOfYear = locateTemperatures(year, "/stations.csv", s"/$year.csv")
@@ -41,38 +36,10 @@ object Main extends App {
     print(s"$year ")
     (year, yearlyAvg)
   })
-  println("\nLoading Finished\n")
-  println("[Creating Images (Temperatures)]")
-  generateTiles[Iterable[(Location, Double)]](
-    yearlyData,
-    (year, zoom, x, y, data) => {
-      println(s"$year $zoom $x $y")
-      val fileName = s"target/temperatures/$year/$zoom"
-      if (!new File(s"$fileName/$x-$y.png").exists()) {
-        val directory = new File(s"$fileName")
-        if (!directory.exists()) {
-          if (directory.mkdirs()) println(s"created directory: $fileName") else println(s"could NOT create directory: $fileName")
-        }
-        val image = tile(data, colorTemp, zoom, x, y)
-        image.output(new File(s"$fileName/$x-$y.png"))
-      }
-    })
-  println("Images Created for Temperatures\n")
+  println("\nFinished Loading Data\n")
 
-  println("[Creating Images (Deviations)]")
-  generateTiles[Iterable[(Location, Double)]](
-    yearlyData.dropWhile(_._1 < 1990),
-    (year, zoom, x, y, data) => {
-      println(s"$year $zoom $x $y")
-      val fileName = s"target/deviations/$year/$zoom/$x-$y.png"
-      if (!new File(fileName).exists()) {
-        val image = visualizeGrid(
-            deviation(data, average(yearlyData.takeWhile(_._1 < 1990).map(_._2))),
-            colorDev, zoom, x, y)
-        image.output(new File(fileName))
-      }
-    })
-  println("Image Created for Deviations\n")
+  generateTempImages(yearlyData, colorTemp)
+  generateDevImages(yearlyData, colorDev)
 
   println("All Done :)")
 }
