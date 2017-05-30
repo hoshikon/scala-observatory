@@ -45,11 +45,13 @@ object Visualization2 {
     y: Int
   ): Image = {
     var progress = 0
+    val RES = 128 //256
     val pixels = for {
-      row <- ((y * 256) until ((y + 1) * 256)).par
-      col <- (x * 256) until ((x + 1) * 256)
+      row <- ((y * RES) until ((y + 1) * RES)).par
+      col <- (x * RES) until ((x + 1) * RES)
     } yield {
-      val loc = tileLocation(zoom + 8, col, row)
+      val log2RES = (Math.log(RES) / Math.log(2)).toInt
+      val loc = tileLocation(zoom + log2RES, col, row)
       val (x0, y0) = (loc.lon.floor.toInt, loc.lat.ceil.toInt)
       val (x1, y1) = (x0 + 1, y0 - 1)
 
@@ -63,20 +65,20 @@ object Visualization2 {
 
       val c = Visualization.interpolateColor(colors, temp)
 
-      if (col == (x + 1) * 256 - 1) {
+      if (col == (x + 1) * RES - 1) {
         progress = progress + 1
-        val length = progress * 100 / 256 // 0 to 10
+        val length = progress * 100 / RES // 0 to 100
         val arrow: String = (0 until length).map(n => "=").mkString + ">"
         val space = (0 until (100 - length)).map(n =>" ").mkString
         val bar = s"|${arrow + space}|"
-        if (progress == 256) println(bar + " Done!")
+        if (progress == RES) println(bar + " Done!")
         else print(bar + "\r")
       }
 
       Pixel(c.red, c.green, c.blue, 127)
     }
 
-    Image(256, 256, pixels.toArray)
+    Image(RES, RES, pixels.toArray)
   }
 
 }
