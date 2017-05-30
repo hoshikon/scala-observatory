@@ -18,6 +18,7 @@ object Visualization {
     val RADUIS_EARTH = 6371
 
     def radians(degree: Double) = degree * PI / 180
+    def isOpposite(l1: Location, l2: Location) = l1.lat == -l2.lat && abs(l1.lon - l2.lon) == 180.0
 
     def greatCircleDistance(l1: Location, l2: Location) = {
       val lat1 = radians(l1.lat)
@@ -25,7 +26,11 @@ object Visualization {
       val lon1 = radians(l1.lon)
       val lon2 = radians(l2.lon)
       val deltaLon = abs(lon1 - lon2)
-      val centralAngle = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaLon))
+      val centralAngle = {
+        if (l1 == l2) 0.0
+        else if (isOpposite(l1, l2)) PI
+        else acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(deltaLon))
+      }
       RADUIS_EARTH * centralAngle
     }
 
@@ -37,7 +42,6 @@ object Visualization {
       .map(temp => temp._2 * w(greatCircleDistance(temp._1, location)))
       .sum / temperatures.map(temp => w(greatCircleDistance(temp._1, location))).sum
     }
-
     temperatures.find(temp => greatCircleDistance(temp._1, location) < 1) match {
       case Some(temp) => temp._2
       case None => inverseDistanceWeight
