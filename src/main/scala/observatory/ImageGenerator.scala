@@ -27,8 +27,10 @@ object ImageGenerator {
 
   def generateDevImages(yearlyData: Iterable[(Int, Iterable[(Location, Double)])], colors: Iterable[(Double, Color)]) = {
     println("[Creating Images (Deviations)]")
+    val getAverage75To90: (Int, Int) => Double = average(yearlyData.takeWhile(_._1 < 1991).map(_._2))
+
     generateTiles[Iterable[(Location, Double)]](
-      yearlyData.dropWhile(_._1 < 1990),
+      yearlyData.dropWhile(_._1 < 1991),
       (year, zoom, x, y, data) => {
         println(s"$year $zoom $x $y")
         val path = s"target/deviations/$year/$zoom"
@@ -36,7 +38,7 @@ object ImageGenerator {
         if (!file.exists()) {
           findOrCreateDirectory(path)
           val image = visualizeGrid(
-            deviation(data, average(yearlyData.takeWhile(_._1 < 1990).map(_._2))),
+            deviation(data, getAverage75To90),
             colors, zoom, x, y)
           image.output(file)
         }
