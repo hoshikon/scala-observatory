@@ -10,7 +10,7 @@ import org.scalatest.prop.Checkers
 @RunWith(classOf[JUnitRunner])
 class VisualizationTest extends FunSuite with Checkers {
 
-  test("predictTemperature should guess temperature from give dataset") {
+  test("predictTemperature should guess temperature from given dataset") {
     val dataset: Iterable[(Location, Double)] =
       Seq(
         (Location(0.0, 0.0), 0.0),
