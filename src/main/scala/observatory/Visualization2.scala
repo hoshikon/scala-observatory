@@ -44,11 +44,11 @@ object Visualization2 {
     x: Int,
     y: Int
   ): Image = {
-    var progress = 0
     val RES = 128 //256
+    val progress = new Array[Boolean](RES * RES)
     val pixels = for {
       row <- ((y * RES) until ((y + 1) * RES)).par
-      col <- (x * RES) until ((x + 1) * RES)
+      col <- ((x * RES) until ((x + 1) * RES)).par
     } yield {
       val log2RES = (Math.log(RES) / Math.log(2)).toInt
       val loc = tileLocation(zoom + log2RES, col, row)
@@ -65,15 +65,21 @@ object Visualization2 {
 
       val c = Visualization.interpolateColor(colors, temp)
 
-      if (col == (x + 1) * RES - 1) {
-        progress = progress + 1
-        val length = progress * 100 / RES // 0 to 100
-        val arrow: String = (0 until length).map(n => "=").mkString + ">"
-        val space = (0 until (100 - length)).map(n =>" ").mkString
-        val bar = s"|${arrow + space}|"
-        if (progress == RES) println(bar + " Done!")
-        else print(bar + "\r")
-      }
+      progress((row - (y * RES)) * RES + (col - (x * RES))) = true
+
+      print(s"[$percent%]\r")
+      if (percent == 100) println("[Done!]")
+
+      def percent = progress.count(x => x) * 100 / progress.length
+
+//      if (col == (x + 1) * RES - 1) {
+//        val length = progress * 100 / RES // 0 to 100
+//        val arrow: String = (0 until length).map(n => "=").mkString + ">"
+//        val space = (0 until (100 - length)).map(n =>" ").mkString
+//        val bar = s"|${arrow + space}|"
+//        if (progress == RES) println(bar + " Done!")
+//        else print(bar + "\r")
+//      }
 
       Pixel(c.red, c.green, c.blue, 127)
     }
