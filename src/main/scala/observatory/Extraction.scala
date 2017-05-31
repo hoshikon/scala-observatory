@@ -42,9 +42,9 @@ object Extraction {
     */
   def locationYearlyAverageRecords(records: Iterable[(LocalDate, Location, Double)]): Iterable[(Location, Double)] = {
     records
-      .groupBy(_._2)
+      .groupBy(_._2).par
       .mapValues(r => r.map(_._3).sum / r.size)
-      .toSeq
+      .toSeq.seq
   }
 
 }
